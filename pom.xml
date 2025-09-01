@@ -11,6 +11,7 @@
 	<groupId>br.com.orbithr.security</groupId>
 	<artifactId>oribthr.security</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
 	<name>oribthr.security</name>
 	<description>API de segurança orbithr</description>
 	<url/>
@@ -115,6 +116,7 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+					<skip>true</skip>
 				</configuration>
 			</plugin>
 		</plugins>
