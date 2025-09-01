@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: oribthr-security
+security:
+  bff:
+    enabled: true
+    idp:
+      base-url: # Defina aqui a URL base do IDP
+      realm: # Defina aqui o realm
+      client-id: # Defina o client-id
+      client-secret: ${SECURITY_CLIENT_SECRET} # Use variável de ambiente para maior segurança
+    audience: # Defina aqui o audience
+keycloak:
+  client-id: ${KEYCLOAK_CLIENT_ID} # Variável de ambiente
+  client-secret: ${KEYCLOAK_CLIENT_SECRET} # Variável de ambiente
+  token-uri: # URI do token
+  logout-uri: # URI de logout
+
+
+
+server:
+  port: 8083
