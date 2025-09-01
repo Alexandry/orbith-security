@@ -55,11 +55,11 @@ public class SecurityConfiguration {
 
     /** Validação automática do JWT via JWKS do IDP */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtDecoder decoder) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtDecoder decoder, BffProperties bffProperties) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("api/auth/login", "api/auth/refresh", "api/auth/logout").permitAll()
+                        .requestMatchers(bffProperties.getPublicEndpoint().split(",")).permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
