@@ -59,7 +59,7 @@ public class SecurityConfiguration {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(bffProperties.getPublicEndpoint().split(",")).permitAll()
+                        .requestMatchers(bffProperties.getEndpoint().split(",")).permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
