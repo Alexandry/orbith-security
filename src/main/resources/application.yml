@@ -3,7 +3,7 @@ spring:
     name: oribthr-security
 security:
   bff:
-    endpoints: /api/login, api/auth/refresh, api/auth/logout
+    endpoints: /api/auth/login, api/auth/refresh, api/auth/logout
     enabled: true
     idp:
       base-url: # Defina aqui a URL base do IDP
