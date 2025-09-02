@@ -68,19 +68,22 @@ public class SecurityConfiguration {
                 .map(String::trim)
                 .filter(s -> !s.isBlank())
                 .toArray(String[]::new);
-        return  http
+        return   http
+                // Desabilita CSRF (se necessário)
                 .csrf(csrf -> csrf.disable())
+
+                // Configura sessões como stateless
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .requestCache(rc -> rc.disable())
+
+                // Permissão para os endpoints públicos (login, refresh, logout)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(Stream.concat(
-                                Stream.of("/actuator/**","/error"), Arrays.stream(publicPatterns)
-                        ).toArray(String[]::new)).permitAll()
+                        .requestMatchers(publicPatterns).permitAll()
                         .anyRequest().authenticated()
                 )
+
+                // Configura o Resource Server (JWT)
                 .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwt -> jwt
-                                .decoder(decoder)
+                        .jwt(jwt -> jwt.decoder(decoder)
                                 .jwtAuthenticationConverter(new JwtConverter()))
                         .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
                         .accessDeniedHandler(new BearerTokenAccessDeniedHandler())
