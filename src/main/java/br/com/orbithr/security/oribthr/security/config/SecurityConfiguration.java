@@ -8,13 +8,20 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.*;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
+import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 
 @AutoConfiguration
@@ -56,15 +63,28 @@ public class SecurityConfiguration {
     /** Validação automática do JWT via JWKS do IDP */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtDecoder decoder, BffProperties bffProperties) throws Exception {
-        return http
+        String[] publicPatterns = Arrays.stream(
+                        Optional.ofNullable(bff.getEndpoints()).orElse("").split(","))
+                .map(String::trim)
+                .filter(s -> !s.isBlank())
+                .toArray(String[]::new);
+        return  http
                 .csrf(csrf -> csrf.disable())
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .requestCache(rc -> rc.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(bffProperties.getEndpoint().split(",")).permitAll()
-                        .anyRequest().authenticated())
+                        .requestMatchers(Stream.concat(
+                                Stream.of("/actuator/**","/error"), Arrays.stream(publicPatterns)
+                        ).toArray(String[]::new)).permitAll()
+                        .anyRequest().authenticated()
+                )
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
                                 .decoder(decoder)
-                                .jwtAuthenticationConverter(new JwtConverter())))
+                                .jwtAuthenticationConverter(new JwtConverter()))
+                        .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
+                        .accessDeniedHandler(new BearerTokenAccessDeniedHandler())
+                )
                 .build();
     }
 }
