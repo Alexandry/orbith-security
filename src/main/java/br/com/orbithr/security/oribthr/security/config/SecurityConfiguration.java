@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -28,6 +29,7 @@ import java.util.stream.Stream;
 @EnableConfigurationProperties({IdpProperties.class, BffProperties.class})
 @ConditionalOnProperty(prefix = "security.bff", name = "enabled", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
+@ComponentScan("br.com.orbithr.security.oribthr.security")
 public class SecurityConfiguration {
 
     private final IdpProperties props;
